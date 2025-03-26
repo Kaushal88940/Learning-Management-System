@@ -1,13 +1,13 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import { userLoggedIn, userLoggedOut } from "../authSlice";
 
-const USER_API = "http://localhost:8080/api/v1/user/"
+const USER_API = "http://127.0.0.1:3001/api/v1/user/";
 
 export const authApi = createApi({
     reducerPath:"authApi",
     baseQuery:fetchBaseQuery({
         baseUrl:USER_API,
-        credentials:'include'
+        credentials:'include',
     }),
     endpoints: (builder) => ({
         registerUser: builder.mutation({
@@ -47,18 +47,20 @@ export const authApi = createApi({
         }),
         loadUser: builder.query({
             query: () => ({
-                url:"profile",
-                method:"GET"
+                url: "profile",
+                method: "GET",
+                credentials: "include",  
             }),
-            async onQueryStarted(_, {queryFulfilled, dispatch}) {
+            async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
-                    dispatch(userLoggedIn({user:result.data.user}));
+                    dispatch(userLoggedIn({ user: result.data.user }));
                 } catch (error) {
-                    console.log(error);
+                    console.log("Error loading user:", error);
                 }
             }
         }),
+        
         updateUser: builder.mutation({
             query: (formData) => ({
                 url:"profile/update",

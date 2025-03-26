@@ -1,29 +1,25 @@
 import React, { useEffect } from "react";
 import { Button } from "./ui/button";
-import { useCreateCheckoutSessionMutation } from "@/features/api/purchaseApi";
+import { usePurchaseCourseMutation } from "@/features/api/purchaseApi";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const BuyCourseButton = ({ courseId }) => {
-  const [createCheckoutSession, {data, isLoading, isSuccess, isError, error }] =
-    useCreateCheckoutSessionMutation();
+  const [purchaseCourse, { data, isLoading, isSuccess, isError, error }] =
+    usePurchaseCourseMutation();
 
   const purchaseCourseHandler = async () => {
-    await createCheckoutSession(courseId);
+    await purchaseCourse({ courseId });
   };
 
-  useEffect(()=>{
-    if(isSuccess){
-       if(data?.url){
-        window.location.href = data.url; // Redirect to stripe checkout url
-       }else{
-        toast.error("Invalid response from server.")
-       }
-    } 
-    if(isError){
-      toast.error(error?.data?.message || "Failed to create checkout session")
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Course purchased successfully! 🎉");
     }
-  },[data, isSuccess, isError, error])
+    if (isError) {
+      toast.error(error?.data?.message || "Failed to purchase course.");
+    }
+  }, [data, isSuccess, isError, error]);
 
   return (
     <Button
@@ -34,7 +30,7 @@ const BuyCourseButton = ({ courseId }) => {
       {isLoading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Please wait
+          Processing...
         </>
       ) : (
         "Purchase Course"

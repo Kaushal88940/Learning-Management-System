@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const COURSE_PROGRESS_API = "http://localhost:8080/api/v1/progress";
+const COURSE_PROGRESS_API = "http://127.0.0.1:3001/api/v1/progress";
 
 export const courseProgressApi = createApi({
   reducerPath: "courseProgressApi",
