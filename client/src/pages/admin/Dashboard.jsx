@@ -13,7 +13,8 @@ const Dashboard = () => {
   console.log("🔍 API Response:", data);
 
   // Ensure purchasedCourse is always an array
-  const purchasedCourse = data?.purchasedCourse || [];
+  const purchasedCourse = data?.purchasedCourses || [];
+  console.log(purchasedCourse)
 
   // Safely map course data
   const courseData = purchasedCourse.map(course => ({

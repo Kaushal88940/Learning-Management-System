@@ -1,4 +1,5 @@
 import RichTextEditor from "@/components/RichTextEditor";
+import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,7 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const CourseTab = () => {
-  
+  const [redirect, setRedirect] = useState(false);
   const [input, setInput] = useState({
     courseTitle: "",
     subTitle: "",
@@ -42,14 +43,36 @@ const CourseTab = () => {
 
   const params = useParams();
   const courseId = params.courseId;
-  const { data: courseByIdData, isLoading: courseByIdLoading , refetch} =
-    useGetCourseByIdQuery(courseId);
+  const { data: courseByIdData, isLoading: courseByIdLoading, refetch } = useGetCourseByIdQuery(courseId);
+  const [publishCourse] = usePublishCourseMutation();
 
-    const [publishCourse, {}] = usePublishCourseMutation();
- 
+  const RemoveCourse = async (courseId) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:3001/api/v1/course/${courseId}/remove-course`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log('Course removed:', data.message);
+        setRedirect(true); // Trigger redirect after deletion
+      } else {
+        const errorData = await res.json();
+        console.error('Failed to remove course:', errorData.message);
+        throw new Error(errorData.message);
+      }
+    } catch (error) {
+      console.error('Error occurred while removing course:', error);
+      toast.error("Failed to remove the course, please try again.");
+    }
+  };
+
   useEffect(() => {
-    if (courseByIdData?.course) { 
-        const course = courseByIdData?.course;
+    if (courseByIdData?.course) {
+      const course = courseByIdData?.course;
       setInput({
         courseTitle: course.courseTitle,
         subTitle: course.subTitle,
@@ -65,8 +88,7 @@ const CourseTab = () => {
   const [previewThumbnail, setPreviewThumbnail] = useState("");
   const navigate = useNavigate();
 
-  const [editCourse, { data, isLoading, isSuccess, error }] =
-    useEditCourseMutation();
+  const [editCourse, { data, isLoading, isSuccess, error }] = useEditCourseMutation();
 
   const changeEventHandler = (e) => {
     const { name, value } = e.target;
@@ -79,7 +101,7 @@ const CourseTab = () => {
   const selectCourseLevel = (value) => {
     setInput({ ...input, courseLevel: value });
   };
-  // get file
+
   const selectThumbnail = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -105,27 +127,32 @@ const CourseTab = () => {
 
   const publishStatusHandler = async (action) => {
     try {
-      const response = await publishCourse({courseId, query:action});
-      if(response.data){
+      const response = await publishCourse({ courseId, query: action });
+      if (response.data) {
         refetch();
         toast.success(response.data.message);
       }
     } catch (error) {
       toast.error("Failed to publish or unpublish course");
     }
-  }
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success(data.message || "Course update.");
+      toast.success(data.message || "Course updated.");
     }
     if (error) {
       toast.error(error.data.message || "Failed to update course");
     }
   }, [isSuccess, error]);
 
-  if(courseByIdLoading) return <h1>Loading...</h1>
- 
+  if (courseByIdLoading) return <h1>Loading...</h1>;
+
+  // Redirect after deletion
+  if (redirect) {
+    return <Navigate to="/admin/course" state={{ deleted: true }} />;
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row justify-between">
@@ -136,10 +163,18 @@ const CourseTab = () => {
           </CardDescription>
         </div>
         <div className="space-x-2">
-          <Button disabled={courseByIdData?.course.lectures.length === 0} variant="outline" onClick={()=> publishStatusHandler(courseByIdData?.course.isPublished ? "false" : "true")}>
+          <Button
+            disabled={courseByIdData?.course.lectures.length === 0}
+            variant="outline"
+            onClick={() =>
+              publishStatusHandler(
+                courseByIdData?.course.isPublished ? "false" : "true"
+              )
+            }
+          >
             {courseByIdData?.course.isPublished ? "Unpublished" : "Publish"}
           </Button>
-          <Button>Remove Course</Button>
+          <Button onClick={() => RemoveCourse(courseId)}>Remove Course</Button>
         </div>
       </CardHeader>
       <CardContent>

@@ -13,18 +13,52 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Switch } from "@/components/ui/switch";
 import Course from "./Course";
 import {
   useLoadUserQuery,
   useUpdateUserMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+
 
 const Profile = () => {
   const [name, setName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState("");
 
   const { data, isLoading, refetch } = useLoadUserQuery();
+
+const navigate = useNavigate();
+
+
+  const changeUserRole = async (userId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:3001/api/v1/user/profile/change-role/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Role changed successfully:', data);
+        alert(`Role changed to ${data.user.role}`);
+        navigate(0); // navigates to current route again
+      } else {
+        console.error('Error:', data.message);
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Something went wrong while changing the role.');
+    }
+  };
+
+  
+
   const [
     updateUser,
     {
@@ -69,7 +103,7 @@ const Profile = () => {
   const user = data && data.user;
 
   console.log(user);
-  
+
 
   return (
     <div className="max-w-4xl mx-auto px-4 my-10">
@@ -91,6 +125,7 @@ const Profile = () => {
               <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
                 {user.name}
               </span>
+
             </h1>
           </div>
           <div className="mb-2">
@@ -102,12 +137,18 @@ const Profile = () => {
             </h1>
           </div>
           <div className="mb-2">
-            <h1 className="font-semibold text-gray-900 dark:text-gray-100 ">
-              Role:
-              <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
-                {user.role.toUpperCase()}
+            
+
+              <h1 className="font-semibold text-gray-900 dark:text-gray-100 ">
+                Role:
+                <span className="font-normal text-gray-700 dark:text-gray-300 ml-2">
+                  {user.role.toUpperCase()}
+                </span>
+              </h1>
+              <span style={{marginTop: "20px", padding: "20px"}}>
+                <Switch style = {{marginTop: "20px",marginRight: "10px"}} checked={""} onCheckedChange={() => changeUserRole(user._id)} id="preview-free" />
+                <Label style= {{fontSize : "15px", fontWeight: "Bold"}} htmlFor="preview-free">Change Role</Label>
               </span>
-            </h1>
           </div>
           <Dialog>
             <DialogTrigger asChild>

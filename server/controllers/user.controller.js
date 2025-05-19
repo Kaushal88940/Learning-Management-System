@@ -104,6 +104,38 @@ export const getUserProfile = async (req, res) => {
         });
     }
 };
+
+export const ChangeRole = async (req, res) => {
+    try {
+        const userId = req.params.id; // assume ID is sent in URL params
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Toggle role
+        user.role = user.role === 'student' ? 'instructor' : 'student';
+
+        // Save the updated user
+        await user.save();
+
+        return res.status(200).json({
+            message: `Role changed successfully to ${user.role}`,
+            user,
+        });
+
+    } catch (error) {
+        console.error('Error changing role:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+
+
 export const updateProfile = async (req,res) => {
     try {
         const userId = req.id;

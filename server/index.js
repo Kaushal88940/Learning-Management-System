@@ -12,6 +12,7 @@ import courseProgressRoute from "./routes/courseProgress.route.js";
 // Load environment variables
 dotenv.config();
 
+
 // Connect to MongoDB
 connectDB()
   .then(() => {
@@ -25,6 +26,8 @@ connectDB()
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+app.use(express.json({ limit: "500mb" }));
+app.use(express.urlencoded({ limit: "500mb", extended: true }));
 
 // ✅ Fix CORS Issues (Allow Frontend & Postman Requests)
 app.use(

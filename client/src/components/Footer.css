@@ -1,0 +1,98 @@
+
+/* @import 'bootstrap/dist/css/bootstrap.min.css'; */
+
+/* footer.css */
+
+/* General Footer Styling */
+footer {
+  background-color: #000; /* Black background */
+  color: #ffffff; /* White text color for readability */
+  padding: 40px 0;
+  border-top: 1px solid #444; /* Dark border at the top */
+}
+
+/* Footer Container */
+footer .container {
+  max-width: 1140px; /* Max width for large screens */
+  margin: 0 auto;
+  padding: 0 15px; /* Padding for spacing */
+}
+
+/* Footer Row */
+footer .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px; /* Space between columns */
+}
+
+/* Align Columns for Better Layout */
+footer .col {
+  flex: 1;
+  min-width: 220px;
+  margin-bottom: 20px; /* Ensure space between columns */
+  text-align: center; /* Center align text */
+}
+
+footer .col a {
+  text-decoration: none;
+  color: #ffffff; /* White color for links */
+}
+
+footer .col a:hover {
+  color: #00bcd4; /* Light cyan hover color */
+}
+
+footer .col svg {
+  width: 40px;
+  height: 32px;
+  margin-right: 10px;
+}
+
+footer .col p {
+  color: #bbb; /* Light grey text color for the copyright */
+  font-size: 14px;
+}
+
+/* Footer Headings */
+footer .col h5 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff; /* White color for headings */
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+/* Footer Navigation Links */
+footer .nav {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+footer .nav-item {
+  margin-bottom: 10px;
+}
+
+footer .nav-link {
+  text-decoration: none;
+  color: #bbb; /* Light grey color for links */
+  font-size: 14px;
+}
+
+footer .nav-link:hover {
+  color: #00bcd4; /* Light cyan hover color for links */
+}
+
+/* Footer Responsive Design */
+@media (max-width: 768px) {
+  footer .row {
+    flex-direction: column; /* Stack columns vertically on smaller screens */
+    text-align: center; /* Center-align text for mobile screens */
+  }
+}
+
+@media (max-width: 576px) {
+  footer .row {
+    text-align: center; /* Center text on smaller screens */
+  }
+}

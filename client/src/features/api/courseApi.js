@@ -12,7 +12,7 @@ export const courseApi = createApi({
   endpoints: (builder) => ({
     createCourse: builder.mutation({
       query: ({ courseTitle, category }) => ({
-        url: "/create", // Ensure correct URL
+        url: "/create",
         method: "POST",
         body: { courseTitle, category },
       }),
@@ -20,18 +20,13 @@ export const courseApi = createApi({
     }),
 
     getSearchCourse: builder.query({
-      query: ({ searchQuery, categories, sortByPrice }) => {
-        let queryString = `/search?query=${encodeURIComponent(searchQuery)}`;
-        
-        if (categories?.length) {
-          queryString += `&categories=${categories.map(encodeURIComponent).join(",")}`;
-        }
+      query: ({ searchQuery = "", categories = [], sortByPrice = "" }) => {
+        const params = new URLSearchParams();
+        if (searchQuery) params.append("query", searchQuery);
+        if (categories.length) params.append("categories", categories.join(","));
+        if (sortByPrice) params.append("sortByPrice", sortByPrice);
 
-        if (sortByPrice) {
-          queryString += `&sortByPrice=${encodeURIComponent(sortByPrice)}`;
-        }
-
-        return { url: queryString, method: "GET" };
+        return { url: `/search?${params.toString()}`, method: "GET" };
       },
     }),
 
@@ -40,7 +35,7 @@ export const courseApi = createApi({
     }),
 
     getCreatorCourse: builder.query({
-      query: () => ({ url: "", method: "GET" }),
+      query: () => ({ url: "/", method: "GET" }),
       providesTags: ["Refetch_Creator_Course"],
     }),
 
@@ -74,7 +69,7 @@ export const courseApi = createApi({
     editLecture: builder.mutation({
       query: ({ lectureTitle, videoInfo, isPreviewFree, courseId, lectureId }) => ({
         url: `/${courseId}/lecture/${lectureId}`,
-        method: "POST", // Changed from POST to PUT
+        method: "PUT",
         body: { lectureTitle, videoInfo, isPreviewFree },
       }),
       invalidatesTags: ["Refetch_Lecture"],
@@ -96,7 +91,7 @@ export const courseApi = createApi({
       query: ({ courseId, isPublished }) => ({
         url: `/${courseId}`,
         method: "PATCH",
-        body: { isPublished }, // Sending as JSON body instead of query string
+        body: { isPublished },
       }),
       invalidatesTags: ["Refetch_Creator_Course"],
     }),

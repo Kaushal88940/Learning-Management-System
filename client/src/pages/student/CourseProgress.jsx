@@ -42,6 +42,7 @@ const CourseProgress = () => {
   console.log(data);
 
   const { courseDetails, progress, completed } = data?.data || {};
+  console.log("Test" ,data);
   if (!courseDetails || !courseDetails.lectures || courseDetails.lectures.length === 0) {
     return <p className="text-center text-red-500">No lectures available for this course.</p>;
   }
@@ -73,9 +74,13 @@ const CourseProgress = () => {
   const handleInCompleteCourse = async () => {
     await inCompleteCourse(courseId);
   };
+  console.log("Current Lecture:", currentLecture);
+console.log("Initial Lecture:", initialLecture);
+console.log("Video URL:", currentLecture?.videoUrl || initialLecture.videoUrl);
+
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div style={{height: "800px"}} className="max-w-7xl mx-auto p-4">
       {/* Display course name */}
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold">{courseDetails.courseTitle}</h1>

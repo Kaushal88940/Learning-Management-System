@@ -202,6 +202,30 @@ export const createLecture = async (req,res) => {
         })
     }
 }
+export const removeCourse = async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      console.log('Course ID received:', courseId);
+  
+      if (!courseId || !courseId.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ error: 'Invalid or missing course ID' });
+      }
+  
+      const deletedCourse = await Course.findByIdAndDelete(courseId);
+  
+      if (!deletedCourse) {
+        return res.status(404).json({ error: 'Course not found' });
+      }
+  
+      return res.status(200).json({ message: 'Course removed successfully' });
+    } catch (error) {
+      console.error('Error removing course:', error);
+      return res.status(500).json({ error: 'Server error while removing course' });
+    }
+  };
+  
+  
+
 export const getCourseLecture = async (req,res) => {
     try {
         const {courseId} = req.params;
@@ -312,28 +336,32 @@ export const getLectureById = async (req,res) => {
 
 // publich unpublish course logic
 
-export const togglePublishCourse = async (req,res) => {
+// controllers/course.controller.js
+export const togglePublishCourse = async (req, res) => {
     try {
-        const {courseId} = req.params;
-        const {publish} = req.query; // true, false
-        const course = await Course.findById(courseId);
-        if(!course){
-            return res.status(404).json({
-                message:"Course not found!"
-            });
-        }
-        // publish status based on the query paramter
-        course.isPublished = publish === "true";
-        await course.save();
-
-        const statusMessage = course.isPublished ? "Published" : "Unpublished";
-        return res.status(200).json({
-            message:`Course is ${statusMessage}`
-        });
+      const { courseId } = req.params;
+      const { isPublished } = req.body; // ✅ Accept from body
+      console.log(isPublished);
+  
+      const course = await Course.findById(courseId);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found!" });
+      }
+  
+    //   course.isPublished = isPublished;
+      if (course.isPublished == true) {
+        course.isPublished = false;
+      }
+      else if(course.isPublished == false){
+        course.isPublished = true;
+      }
+      await course.save();
+  
+      const statusMessage = course.isPublished ?"Published" : "Unpublished" ;
+      return res.status(200).json({ message: `Course is ${statusMessage}` });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message:"Failed to update status"
-        })
+      console.log(error);
+      return res.status(500).json({ message: "Failed to update status" });
     }
-}
+  };
+  
